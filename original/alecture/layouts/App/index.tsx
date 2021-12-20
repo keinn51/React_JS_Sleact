@@ -1,4 +1,4 @@
-import React from 'react';
+gitimport React from 'react';
 import loadable from '@loadable/component';
 import { Switch, Route, Redirect } from 'react-router-dom';
 
