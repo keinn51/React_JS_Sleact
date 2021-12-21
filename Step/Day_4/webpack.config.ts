@@ -1,8 +1,5 @@
 import path from 'path';
-// import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import webpack from 'webpack';
-// import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
-// import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
 // production 이면 배포용이고 아니면 개발용이다. (mode에 따라서 달라진다.)
 const isDevelopment = process.env.NODE_ENV !== 'production';
@@ -12,12 +9,14 @@ const isDevelopment = process.env.NODE_ENV !== 'production';
 // 타입이라는 것을 알려주는 것이다.
 const config: webpack.Configuration = {
   name: 'sleact',
+  // mode 옵션을 사용하면 webpack에 내장된 최적화 기능을 사용할 수 있습니다.
   mode: isDevelopment ? 'development' : 'production',
+  // devtool 옵션은 소스맵 생성 여부와 방법을 제어합니다. (eval은 build가 빠름)
   devtool: !isDevelopment ? 'hidden-source-map' : 'eval',
   resolve: {
 		// 바벨이 처리할 확장자 목록
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
-    alias: {
+    alias: {  //파일 이름 맞춰서 지정해야 한다!
       '@hooks': path.resolve(__dirname, 'hooks'), // .../.. 이런거 없애준다.
       '@components': path.resolve(__dirname, 'components'),
       '@layouts': path.resolve(__dirname, 'layouts'),
@@ -27,7 +26,7 @@ const config: webpack.Configuration = {
     },
   },
   entry: {
-    app: './client',  // client.tsx 가 메인 타입스크립트가 될 것이다.
+    app: './client',  // client.tsx 가 번들 tsx 파일이다.
   },
   module: {
     rules: [
@@ -49,7 +48,7 @@ const config: webpack.Configuration = {
             '@babel/preset-react',
             '@babel/preset-typescript',
           ],
-          env: {
+          env: {  //css에서 emotion 이라는 css style이 있는데, 이를 가능하게 해준다.
             development: {
               plugins: [['@emotion', { sourceMap: true }], require.resolve('react-refresh/babel')],
             },
@@ -67,12 +66,6 @@ const config: webpack.Configuration = {
     ],
   },
   plugins: [
-    // new ForkTsCheckerWebpackPlugin({
-    //   async: false,
-    //   eslint: {
-    //     files: "./src/**/*",
-    //   },
-    // }),
 		// NODE_ENV 는 프론트에서 접근할 수 없는데, EnvironmentPlugin 이 접근하게 해줌
     new webpack.EnvironmentPlugin({ NODE_ENV: isDevelopment ? 'development' : 'production' }),
   ],
@@ -82,27 +75,6 @@ const config: webpack.Configuration = {
     filename: '[name].js',
     publicPath: '/dist/',
   },
-  // devServer: {
-  //   historyApiFallback: true, // react router
-  //   port: 3090,
-  //   publicPath: '/dist/',
-  //   proxy: {
-  //     '/api/': {
-  //       target: 'http://localhost:3095',
-  //       changeOrigin: true,
-  //     },
-  //   },
-  // },
 };
-// 개발환경일 때의 플러그인과 아닐 때의 플러그인
-if (isDevelopment && config.plugins) {
-  // config.plugins.push(new webpack.HotModuleReplacementPlugin());
-  // config.plugins.push(new ReactRefreshWebpackPlugin());
-  // config.plugins.push(new BundleAnalyzerPlugin({ analyzerMode: 'server', openAnalyzer: true }));
-}
-if (!isDevelopment && config.plugins) {
-  // config.plugins.push(new webpack.LoaderOptionsPlugin({ minimize: true }));
-  // config.plugins.push(new BundleAnalyzerPlugin({ analyzerMode: 'static' }));
-}
 
 export default config;
