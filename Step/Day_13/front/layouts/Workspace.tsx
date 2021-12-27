@@ -4,21 +4,22 @@ import React, { FC, useCallback } from 'react';
 import { Navigate } from 'react-router';
 import useSWR from 'swr';
 
-const Workspace: FC = ({children}) => {
-  const {data, error, mutate} = useSWR('http://localhost:3095/api/users', fetcher, {
+const Workspace: FC = ({ children }) => {
+  const { data, error, mutate } = useSWR('http://localhost:3095/api/users', fetcher, {
     dedupingInterval: 100000,
   });
   const onLogout = useCallback(() => {
-    axios.post('/api/users/logout', null, {
-      withCredentials:true
-    })
+    axios
+      .post('/api/users/logout', null, {
+        withCredentials: true,
+      })
       .then(() => {
         mutate();
-      })
-  }, [])
+      });
+  }, []);
 
   if (!data) {
-    return <Navigate to="/login" />
+    return <Navigate to="/login" />;
   }
 
   return (
@@ -26,7 +27,7 @@ const Workspace: FC = ({children}) => {
       <button onClick={onLogout}>로그아웃</button>
       {children}
     </div>
-  )
-}
+  );
+};
 
 export default Workspace;

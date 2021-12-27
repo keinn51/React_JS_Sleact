@@ -7,7 +7,7 @@ import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
 
 const SignUp = () => {
-  const {data, error, mutate} = useSWR('http://localhost:3095/api/users', fetcher, {
+  const { data, error, mutate } = useSWR('http://localhost:3095/api/users', fetcher, {
     dedupingInterval: 100000,
   });
   const [email, setEmail, onChangeEmail] = useInput('');
@@ -17,7 +17,6 @@ const SignUp = () => {
   const [mismatchError, setMismatchError] = useInput(false); //비밀번호 설정 오류 체크
   const [signUpError, setSignUpError] = useInput('');
   const [signUpSuccess, setSignUpSuccess] = useInput(false);
-
 
   const onChangePassword = useCallback(
     (e) => {
@@ -44,11 +43,12 @@ const SignUp = () => {
         console.log(`서버로 회원가입하기`);
         setSignUpError('');
         setSignUpSuccess(true);
-        axios.post('/api/users', {
-          email,
-          nickname,
-          password,
-        })
+        axios
+          .post('/api/users', {
+            email,
+            nickname,
+            password,
+          })
           .then((response) => {
             console.log(response);
           })
@@ -56,18 +56,18 @@ const SignUp = () => {
             console.log(error.response);
             setSignUpError(error.response.data);
           })
-          .finally(() => {})
+          .finally(() => {});
       }
     },
     [email, nickname, password, passwordCheck, mismatchError],
   );
 
-  if (data === undefined){
-    return <div>loading...</div>
+  if (data === undefined) {
+    return <div>loading...</div>;
   }
 
   if (data) {
-    return <Navigate to="/workspace/channel" />
+    return <Navigate to="/workspace/channel" />;
   }
 
   return (

@@ -8,12 +8,12 @@ import { Link } from 'react-router-dom';
 import useSWR from 'swr';
 
 const LogIn = () => {
-  const {data, error, mutate} = useSWR('http://localhost:3095/api/users', fetcher, {
+  const { data, error, mutate } = useSWR('http://localhost:3095/api/users', fetcher, {
     dedupingInterval: 100000,
   });
   const [logInError, setLogInError] = useState(false);
-  const [email, ,onChangeEmail] = useInput('');
-  const [password, ,onChangePassword] = useInput('');
+  const [email, , onChangeEmail] = useInput('');
+  const [password, , onChangePassword] = useInput('');
   const onSubmit = useCallback(
     (e) => {
       e.preventDefault();
@@ -36,12 +36,12 @@ const LogIn = () => {
     [email, password],
   );
 
-  if (data === undefined){
-    return <div>loading...</div>
+  if (data === undefined) {
+    return <div>loading...</div>;
   }
 
   if (data) {
-    return <Navigate to="/workspace/channel" />
+    return <Navigate to="/workspace/channel" />;
   }
 
   // console.log(error, userData);
