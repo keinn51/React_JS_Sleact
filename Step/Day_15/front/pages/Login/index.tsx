@@ -17,7 +17,7 @@ const LogIn = () => {
   const onSubmit = useCallback(
     (e) => {
       e.preventDefault();
-      setLogInError(false);
+      setLogInError(false); // 요청을 하기 전에 먼저 setting 을 해준다.
       axios
         .post(
           '/api/users/login',
@@ -37,10 +37,12 @@ const LogIn = () => {
     [email, password],
   );
 
+  // 데이터가 없으면 로딩
   if (data === undefined) {
     return <div>loading...</div>;
   }
 
+  // 데이터가 있으면 바로 워크스페이스로 간다.
   if (data) {
     return <Navigate to="/workspace/channel" />;
   }
