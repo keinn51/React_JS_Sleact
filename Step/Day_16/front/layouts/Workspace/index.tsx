@@ -28,6 +28,7 @@ import { IUser } from '@typings/db';
 import { Button, Input, Label } from '@pages/SignUp/styles';
 import Modal from '@components/Modal';
 import { toast } from 'react-toastify';
+import CreateChannelModal from '@components/CreateChannelModal';
 
 const Channel = loadable(() => import('@pages/Channel'));
 const DirectMessage = loadable(() => import('@pages/DirectMessage'));
@@ -45,9 +46,6 @@ const Workspace: VFC = () => {
   const [newUrl, setNewUrl, onChangeNewUrl] = useInput('');
   const [showWorkspaceModal, setShowWorkspaceModal] = useInput(false);
   const [showCreateChannelModal, setShowCreateChannelModal] = useInput(false);
-
-  // console.log(`newWorkspace: ${newWorkspace}`)
-  // console.log(`newUrl:${newUrl}`)
 
   const onLogout = useCallback(() => {
     axios
@@ -140,10 +138,11 @@ const Workspace: VFC = () => {
           </span>
         </RightMenu>
       </Header>
+
       <button onClick={onLogout}>로그아웃</button>
       <WorkspaceWrapper>
         <Workspaces>
-          {userData?.Workspaces.map((ws) => {
+          {userData?.Workspaces?.map((ws) => {
             return (
               <Link key={ws.id} to={`/workspace/${123}/channel/일반`}>
                 <WorkspaceButton>{ws.name.slice(0, 1).toUpperCase()}</WorkspaceButton>
@@ -152,7 +151,9 @@ const Workspace: VFC = () => {
           })}
           <AddButton onClick={onClickCreateWorkspace}>+</AddButton>
         </Workspaces>
-        <Channels>
+        {/* Channel  */}
+        <Channels> 
+          {/* WorkspaceName : Button => 채널만들기 & 로그아웃 */}
           <WorkspaceName onClick={toggleWorkspaceModal}>Sleact</WorkspaceName>
           <MenuScroll>
             <Menu show={showWorkspaceModal} onCloseModal={toggleWorkspaceModal} style={{ top: 95, left: 80 }}>
@@ -172,6 +173,7 @@ const Workspace: VFC = () => {
           </Routes>
         </Chats>
       </WorkspaceWrapper>
+
       <Modal show={showCreateWorkspaceModal} onCloseModal={onCloseModal}>
         <form onSubmit={onCreateWorkspace}>
           <Label id="workspace-label">
@@ -185,11 +187,7 @@ const Workspace: VFC = () => {
           <Button type="submit">Create</Button>
         </form>
       </Modal>
-      <CreateChannelModal
-        show={showCreateChannelModal}
-        onCloseModal={onCloseModal}
-        setShowCreateChannelModal={setShowCreateChannelModal}
-      />
+      <CreateChannelModal show={showCreateChannelModal} onCloseModal={onCloseModal} />
     </div>
   );
 };
