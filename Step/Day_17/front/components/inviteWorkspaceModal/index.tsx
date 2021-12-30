@@ -1,7 +1,7 @@
 import Modal from '@components/Modal';
 import useInput from '@hooks/useinput';
 import { Button, Input, Label } from '@pages/SignUp/styles';
-import { IChannel, IUser } from '@typings/db';
+import { IUser } from '@typings/db';
 import fetcher from '@utils/fetcher';
 import axios from 'axios';
 import React, { useCallback, VFC } from 'react';
@@ -12,53 +12,53 @@ import useSWR from 'swr';
 interface Props {
   show: boolean;
   onCloseModal: () => void;
-  setShowCreateChannelModal: (flag: boolean) => void;
+  setShowInviteWorkspaceModal: (flag: boolean) => void;
 }
 
-const CreateChannelModal: VFC<Props> = ({ show, onCloseModal, setShowCreateChannelModal }) => {
+const InviteWorkspaceModal: VFC<Props> = ({ show, onCloseModal, setShowInviteWorkspaceModal }) => {
   const { workspace } = useParams();
-  const [newChannel, setNewChannel, onChangeNewWorkspace] = useInput('');
+  const [newMember, setNewMember, onChangeNewMember] = useInput('');
 
   const { data: userData, error } = useSWR<IUser | false>('/api/users', fetcher, {
     dedupingInterval: 2000, // 2초
   });
-  const { data: channelData, mutate: mutateChannel } = useSWR<IChannel[]>(
-    userData ? `/api/workspaces/${workspace}/channels` : null,
+  const { data: channelData, mutate: mutateMember } = useSWR<IUser[]>(
+    userData ? `/api/workspaces/${workspace}/members` : null,
     fetcher,
   );
 
-  const onCreateChannel = useCallback((e) => {
+  const onInviteMember = useCallback((e) => {
     e.preventDefault();
-    if (!newChannel || !newChannel.trim()) return;
+    if (!newMember || !newMember.trim()) return;
     axios
       .post(
-        `/api/workspaces/${workspace}/channels`,
+        `/api/workspaces/${workspace}/members`,
         {
-          name: newChannel,
+          email: newMember,
         },
         {
           withCredentials: true,
         },
       )
       .then(() => {
-        mutateChannel();
-        setShowCreateChannelModal(false);
-        setNewChannel('');
+        mutateMember();
+        setShowInviteWorkspaceModal(false);
+        setNewMember('');
       })
       .catch((error) => {
         console.dir(error);
         toast.error(error.response?.data, { position: 'bottom-center' });
       });
-  }, [newChannel]);
+  }, [newMember]);
 
   // console.log(`workspace: ${workspace}`)
 
   return (
     <Modal show={show} onCloseModal={onCloseModal}>
-      <form onSubmit={onCreateChannel}>
-        <Label id="channel-label">
-          <span>Workspace Name</span>
-          <Input id="workspace" type="text" value={newChannel} onChange={onChangeNewWorkspace} />
+      <form onSubmit={onInviteMember}>
+        <Label id="member-label">
+          <span>Email</span>
+          <Input id="member" type="email" value={newMember} onChange={onChangeNewMember} />
         </Label>
         <Button type="submit">Create</Button>
       </form>
@@ -66,4 +66,4 @@ const CreateChannelModal: VFC<Props> = ({ show, onCloseModal, setShowCreateChann
   );
 };
 
-export default CreateChannelModal;
+export default InviteWorkspaceModal;

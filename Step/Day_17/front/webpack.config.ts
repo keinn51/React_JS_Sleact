@@ -84,7 +84,7 @@ const config: webpack.Configuration = {
     historyApiFallback: true, // react router 할 때 필요
 		//히스토리API를 사용하는 웹 어플리케이션 개발 시(예를 들어 SPA) 사용하며 이때 true로 설정한다.
     port: 3090,  // 데브서버의 포트 번호를 임의로 설정하는 곳이다.
-    static: { directory: path.resolve(__dirname) },
+    static: { directory: path.resolve(__dirname, '/dist/') },
     proxy: {  //프론트에서 api로 시작하는 요청은 주소를 3095로 바꾸어서 보내라. (3095로 취급하겠다)
       '/api/': {
         target: 'http://localhost:3095',
