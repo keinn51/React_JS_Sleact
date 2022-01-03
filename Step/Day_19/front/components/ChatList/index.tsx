@@ -1,12 +1,10 @@
 import React from 'react';
-import { ChatZone, Section } from "@components/ChatList/styles"
+import { ChatZone, Section } from '@components/ChatList/styles';
 
 function ChatList() {
   return (
     <ChatZone>
-      <Section>
-        section
-      </Section>
+      <Section>section</Section>
     </ChatZone>
   );
 }

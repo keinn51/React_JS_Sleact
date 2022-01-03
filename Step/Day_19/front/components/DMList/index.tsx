@@ -1,4 +1,5 @@
 import { CollapseButton } from '@components/DMList/styles';
+import useSocket from '@hooks/useSocket';
 import { IUser, IUserWithOnline } from '@typings/db';
 import fetcher from '@utils/fetcher';
 import React, { FC, useCallback, useEffect, useState } from 'react';
@@ -6,19 +7,20 @@ import { useParams } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import useSWR from 'swr';
 
-const DMList: FC= () => {
+const DMList: FC = () => {
   const { workspace } = useParams<{ workspace?: string }>();
   const [channelCollapse, setChannelCollapse] = useState(false);
   const [onlineList, setOnlineList] = useState<number[]>([]);
-  const [countList, setCountList ] = useState<{[key: string]: number}>({});
+  const [countList, setCountList] = useState<{ [key: string]: number }>({});
 
-  const { data : userData } = useSWR<IUser>('/api/users', fetcher);
+  const { data: userData } = useSWR<IUser>('/api/users', fetcher);
 
   const { data: memberData } = useSWR<IUserWithOnline[]>(
     userData ? `/api/workspaces/${workspace}/members` : null,
     fetcher,
   );
 
+  const [socket] = useSocket(workspace);
 
   const toggleChannelCollapse = useCallback(() => {
     setChannelCollapse((prev) => !prev);
@@ -39,18 +41,18 @@ const DMList: FC= () => {
   //   })
   // }, [])
 
-  // useEffect(() => {
-  //   socket?.on('onlineList', (data: number[]) => {
-  //     setOnlineList(data);
-  //   });
-  //   // socket?.on('dm', onMessage);
-  //   // console.log('socket on dm', socket?.hasListeners('dm'), socket);
-  //   return () => {
-  //     // socket?.off('dm', onMessage);
-  //     // console.log('socket off dm', socket?.hasListeners('dm'));
-  //     socket?.off('onlineList');
-  //   };
-  // }, [socket]);
+  useEffect(() => {
+    socket?.on('onlineList', (data: number[]) => {
+      setOnlineList(data);
+    });
+    // socket?.on('dm', onMessage);
+    // console.log('socket on dm', socket?.hasListeners('dm'), socket);
+    return () => {
+      // socket?.off('dm', onMessage);
+      // console.log('socket off dm', socket?.hasListeners('dm'));
+      socket?.off('onlineList');
+    };
+  }, [socket]);
 
   return (
     <>
@@ -70,7 +72,11 @@ const DMList: FC= () => {
             const isOnline = onlineList.includes(member.id);
             const count = countList[member.id] || 0;
             return (
-              <NavLink key={member.id} className={({ isActive }) => isActive ? "selected" : "not"} to={`/workspace/${workspace}/dm/${member.id}`}>
+              <NavLink
+                key={member.id}
+                className={({ isActive }) => (isActive ? 'selected' : 'not')}
+                to={`/workspace/${workspace}/dm/${member.id}`}
+              >
                 <i
                   className={`c-icon p-channel_sidebar__presence_icon p-channel_sidebar__presence_icon--dim_enabled c-presence ${
                     isOnline ? 'c-presence--active c-icon--presence-online' : 'c-icon--presence-offline'

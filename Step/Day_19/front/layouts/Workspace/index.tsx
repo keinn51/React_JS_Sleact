@@ -54,15 +54,22 @@ const Workspace: VFC = () => {
     userData && workspace ? `/api/workspaces/${workspace}/channels` : null,
     fetcher,
   );
-  const { data: memberData } = useSWR<IUser[]>(`/api/workspaces/${workspace}/members`, fetcher);
+  // const { data: memberData } = useSWR<IUser[]>(`/api/workspaces/${workspace}/members`, fetcher);
 
   const [socket, disconnet] = useSocket(workspace);
 
   useEffect(() => {
-    socket.on('message');
-    socket.emit();
-    disconnet();
-  }, []);
+    if (channelData && userData && socket) {
+      console.log(socket);
+      socket.emit(`login`, { id: userData.id, channels: channelData.map((v) => v.id) });
+    }
+  }, [channelData, socket, userData]);
+
+  useEffect(() => {
+    return () => {
+      disconnet();
+    };
+  }, [workspace, disconnet]);
 
   const onLogout = useCallback(() => {
     axios
