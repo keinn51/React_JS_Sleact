@@ -7,7 +7,7 @@ import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
 
 const SignUp = () => {
-  const { data, error, isValidating,mutate } = useSWR('http://localhost:3095/api/users', fetcher, {
+  const { data, error, isValidating, mutate } = useSWR('http://localhost:3095/api/users', fetcher, {
     dedupingInterval: 100000,
   });
   const [email, setEmail, onChangeEmail] = useInput('');

@@ -27,29 +27,32 @@ const InviteWorkspaceModal: VFC<Props> = ({ show, onCloseModal, setShowInviteWor
     fetcher,
   );
 
-  const onInviteMember = useCallback((e) => {
-    e.preventDefault();
-    if (!newMember || !newMember.trim()) return;
-    axios
-      .post(
-        `/api/workspaces/${workspace}/members`,
-        {
-          email: newMember,
-        },
-        {
-          withCredentials: true,
-        },
-      )
-      .then(() => {
-        mutateMember();
-        setShowInviteWorkspaceModal(false);
-        setNewMember('');
-      })
-      .catch((error) => {
-        console.dir(error);
-        toast.error(error.response?.data, { position: 'bottom-center' });
-      });
-  }, [newMember]);
+  const onInviteMember = useCallback(
+    (e) => {
+      e.preventDefault();
+      if (!newMember || !newMember.trim()) return;
+      axios
+        .post(
+          `/api/workspaces/${workspace}/members`,
+          {
+            email: newMember,
+          },
+          {
+            withCredentials: true,
+          },
+        )
+        .then(() => {
+          mutateMember();
+          setShowInviteWorkspaceModal(false);
+          setNewMember('');
+        })
+        .catch((error) => {
+          console.dir(error);
+          toast.error(error.response?.data, { position: 'bottom-center' });
+        });
+    },
+    [newMember],
+  );
 
   // console.log(`workspace: ${workspace}`)
 

@@ -27,31 +27,34 @@ const InviteChannelModal: VFC<Props> = ({ show, onCloseModal, setShowInviteChann
     fetcher,
   );
 
-  const onInviteMember = useCallback((e) => {
-    e.preventDefault();
-    if (!newMember || !newMember.trim()) return;
-    axios
-      .post(
-        `/api/workspaces/${workspace}/channels/${channel}/members`,
-        {
-          email: newMember,
-        },
-        {
-          withCredentials: true,
-        },
-      )
-      .then(() => {
-        mutateMember();
-        setShowInviteChannelModal(false);
-        setNewMember('');
-      })
-      .catch((error) => {
-        console.dir(error);
-        toast.error(error.response?.data, { position: 'bottom-center' });
-      });
-  }, [newMember]);
+  const onInviteMember = useCallback(
+    (e) => {
+      e.preventDefault();
+      if (!newMember || !newMember.trim()) return;
+      axios
+        .post(
+          `/api/workspaces/${workspace}/channels/${channel}/members`,
+          {
+            email: newMember,
+          },
+          {
+            withCredentials: true,
+          },
+        )
+        .then(() => {
+          mutateMember();
+          setShowInviteChannelModal(false);
+          setNewMember('');
+        })
+        .catch((error) => {
+          console.dir(error);
+          toast.error(error.response?.data, { position: 'bottom-center' });
+        });
+    },
+    [newMember],
+  );
 
-  console.log(`workspace: ${workspace} ${channel}`)
+  console.log(`workspace: ${workspace} ${channel}`);
 
   return (
     <Modal show={show} onCloseModal={onCloseModal}>

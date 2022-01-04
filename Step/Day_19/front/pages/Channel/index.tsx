@@ -7,11 +7,14 @@ import ChatBox from '@components/ChatBox';
 const Channel = () => {
   const [chat, setChat, onChangeChat] = useInput('');
 
-  const onSubmitForm = useCallback((e) => {
-    // e.preventDefault();
-    console.log(`submit: ${chat}`);
-    setChat('');
-  }, [chat]);
+  const onSubmitForm = useCallback(
+    (e) => {
+      // e.preventDefault();
+      console.log(`submit: ${chat}`);
+      setChat('');
+    },
+    [chat],
+  );
 
   return (
     <Container>
@@ -19,7 +22,7 @@ const Channel = () => {
       <ChatList />
       <ChatBox chat={chat} onChangeChat={onChangeChat} onSubmitForm={onSubmitForm} />
     </Container>
-  )
-}
+  );
+};
 
 export default Channel;

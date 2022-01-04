@@ -34,7 +34,7 @@ const ChannelList: FC = () => {
             return (
               <NavLink
                 key={channel.name}
-                className={({ isActive }) => isActive ? "selected" : "not"}
+                className={({ isActive }) => (isActive ? 'selected' : 'not')}
                 to={`/workspace/${workspace}/channel/${channel.name}`}
               >
                 <span># {channel.name}</span>
