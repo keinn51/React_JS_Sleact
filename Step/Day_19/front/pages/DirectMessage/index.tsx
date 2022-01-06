@@ -42,7 +42,7 @@ const DirectMessage = () => {
     return null;
   }
 
-  console.log(chatData);
+  // console.log(chatData);
 
   return (
     <Container>
