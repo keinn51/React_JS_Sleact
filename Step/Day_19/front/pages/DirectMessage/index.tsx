@@ -1,7 +1,7 @@
 import { Header, Container } from '@pages/DirectMessage/styles';
 import React, { useCallback } from 'react';
 import gravatar from 'gravatar';
-import useSWR, { mutate } from 'swr';
+import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
 import { useParams } from 'react-router';
 import ChatBox from '@components/ChatBox';
@@ -22,9 +22,8 @@ const DirectMessage = () => {
 
   const onSubmitForm = useCallback(
     (e) => {
-      // e.preventDefault();
-      console.log(`e: ${e}`);
-      if (!chat.trim()) {
+      e.preventDefault();
+      if (chat.trim()) {
         axios
           .post(`/api/workspaces/${workspace}/dms/${id}/chats`, {
             content: chat,
@@ -43,7 +42,7 @@ const DirectMessage = () => {
     return null;
   }
 
-  // console.log(workspace, id)
+  console.log(chatData);
 
   return (
     <Container>
@@ -51,7 +50,7 @@ const DirectMessage = () => {
         <img src={gravatar.url(userData?.email, { s: '24px', d: 'retro' })} alt={userData?.nickname} />
         <span>{userData?.nickname}</span>
       </Header>
-      <ChatList />
+      <ChatList chatData={chatData} />
       <ChatBox chat={chat} onSubmitForm={onSubmitForm} onChangeChat={onChangeChat} />
     </Container>
   );

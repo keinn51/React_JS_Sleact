@@ -14,19 +14,18 @@ const ChatBox: VFC<Props> = ({ chat, onSubmitForm, onChangeChat, placeholder }) 
 
   const OnKeydownChat = useCallback(
     (e) => {
-      // console.log(e);
       if (e.key === 'Enter') {
         if (!e.shiftKey) {
-          onSubmitForm(chat);
+          e.preventDefault();
+          onSubmitForm(e);
         }
       }
     },
-    [chat, onSubmitForm],
+    [onSubmitForm],
   );
 
   useEffect(() => {
     if (textareaRef.current) {
-      // console.log(textareaRef);
       autosize(textareaRef.current);
     }
   });

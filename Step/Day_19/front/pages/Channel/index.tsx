@@ -9,11 +9,11 @@ const Channel = () => {
 
   const onSubmitForm = useCallback(
     (e) => {
-      // e.preventDefault();
+      e.preventDefault();
       console.log(`submit: ${chat}`);
       setChat('');
     },
-    [chat],
+    [chat, setChat],
   );
 
   return (
