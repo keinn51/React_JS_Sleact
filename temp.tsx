@@ -1,15 +1,30 @@
-const result = regexifyString({
-  input: data.content,
-  pattern: /@\[(.+?)]\((\d+?)\)|\n/g,
-  decorator(match, index) {
-    const arr: string[] | null = match.match(/@\[(.+?)]\((\d+?)\)/)!;
-    if (arr) {
-      return (
-        <Link key={match + index} to={`/workspace/${workspace}/dm/${arr[2]}`}>
-          @{arr[1]}
-        </Link>
-      );
+const onSubmitForm = useCallback(
+  (e) => {
+    e.preventDefault();
+    if (chat.trim() && chatData) {
+      const savedChat = chat;
+      mutateChat((prevChatData) => {
+        prevChatData?.[0].unshift({
+          id: (chatData[0][0]?.id || 0) + 1,
+          content: savedChat,
+          SenderId: myData.id,
+          Sender: myData,
+          ReceiverId: userData.id,
+          Receiver: userData,
+          createdAt: new Date(),
+        });
+        return prevChatData;
+      }, false).then(() => {
+        setChat("");
+        scrollbarRef?.current?.scrollToBottom();
+      });
+      axios
+        .post(`/api/workspaces/${workspace}/dms/${id}/chats`, {
+          content: chat,
+        })
+        .then(() => {})
+        .catch(console.error);
     }
-    return <br key={index} />;
   },
-});
+  [chat, id, mutateChat, setChat, workspace],
+);
