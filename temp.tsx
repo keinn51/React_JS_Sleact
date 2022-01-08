@@ -1,32 +1,38 @@
-const onMessage = useCallback(
-  (data: IDM) => {
-    if (data.SenderId === Number(id) && myData.id !== Number(id)) {
-      mutateChat((chatData) => {
-        chatData?.[0].unshift(data);
-        return chatData;
-      }, false).then(() => {
-        if (scrollbarRef.current) {
-          if (
-            scrollbarRef.current.getScrollHeight() <
-            scrollbarRef.current.getClientHeight() +
-              scrollbarRef.current.getScrollTop() +
-              150
-          ) {
-            console.log("scrollToBottom!", scrollbarRef.current?.getValues());
-            setTimeout(() => {
-              scrollbarRef.current?.scrollToBottom();
-            }, 100);
-          } else {
-            toast.success("새 메시지가 도착했습니다.", {
-              onClick() {
-                scrollbarRef.current?.scrollToBottom();
-              },
-              closeOnClick: true,
-            });
-          }
+const onDrop = useCallback(
+  (e) => {
+    e.preventDefault();
+    // console.log(e);
+    const formData = new FormData();
+    if (e.dataTransfer.items) {
+      // Use DataTransferItemList interface to access the file(s)
+      for (let i = 0; i < e.dataTransfer.items.length; i++) {
+        // If dropped items aren't files, reject them
+        console.log(e.dataTransfer.items[i]);
+        if (e.dataTransfer.items[i].kind === "file") {
+          const file = e.dataTransfer.items[i].getAsFile();
+          console.log(e, ".... file[" + i + "].name = " + file.name);
+          formData.append("image", file);
         }
-      });
+      }
+    } else {
+      // Use DataTransfer interface to access the file(s)
+      for (let i = 0; i < e.dataTransfer.files.length; i++) {
+        console.log(
+          e,
+          "... file[" + i + "].name = " + e.dataTransfer.files[i].name,
+        );
+        formData.append("image", e.dataTransfer.files[i]);
+      }
     }
+    axios
+      .post(`/api/workspaces/${workspace}/channels/${channel}/images`, formData)
+      .then(() => {
+        setDragOver(false);
+        localStorage.setItem(
+          `${workspace}-${channel}`,
+          new Date().getTime().toString(),
+        );
+      });
   },
-  [id, myData, mutateChat],
+  [workspace, channel],
 );
