@@ -12,6 +12,8 @@ import makeSection from '@utils/makeSection';
 import { IChannel, IChat, IUser } from '@typings/db';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import Scrollbars from 'react-custom-scrollbars';
+import InviteChannelModal from '@components/inviteChannelModal';
 
 const PAGE_SIZE = 20;
 const Channel = () => {
@@ -64,7 +66,9 @@ const Channel = () => {
           .post(`/api/workspaces/${workspace}/channels/${channel}/chats`, {
             content: chat,
           })
-          .then(() => {})
+          .then(() => {
+            mutateChat();
+          })
           .catch(console.error);
       }
     },
