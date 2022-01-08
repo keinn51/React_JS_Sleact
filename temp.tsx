@@ -1,30 +1,32 @@
-const onSubmitForm = useCallback(
-  (e) => {
-    e.preventDefault();
-    if (chat.trim() && chatData) {
-      const savedChat = chat;
-      mutateChat((prevChatData) => {
-        prevChatData?.[0].unshift({
-          id: (chatData[0][0]?.id || 0) + 1,
-          content: savedChat,
-          SenderId: myData.id,
-          Sender: myData,
-          ReceiverId: userData.id,
-          Receiver: userData,
-          createdAt: new Date(),
-        });
-        return prevChatData;
+const onMessage = useCallback(
+  (data: IDM) => {
+    if (data.SenderId === Number(id) && myData.id !== Number(id)) {
+      mutateChat((chatData) => {
+        chatData?.[0].unshift(data);
+        return chatData;
       }, false).then(() => {
-        setChat("");
-        scrollbarRef?.current?.scrollToBottom();
+        if (scrollbarRef.current) {
+          if (
+            scrollbarRef.current.getScrollHeight() <
+            scrollbarRef.current.getClientHeight() +
+              scrollbarRef.current.getScrollTop() +
+              150
+          ) {
+            console.log("scrollToBottom!", scrollbarRef.current?.getValues());
+            setTimeout(() => {
+              scrollbarRef.current?.scrollToBottom();
+            }, 100);
+          } else {
+            toast.success("새 메시지가 도착했습니다.", {
+              onClick() {
+                scrollbarRef.current?.scrollToBottom();
+              },
+              closeOnClick: true,
+            });
+          }
+        }
       });
-      axios
-        .post(`/api/workspaces/${workspace}/dms/${id}/chats`, {
-          content: chat,
-        })
-        .then(() => {})
-        .catch(console.error);
     }
   },
-  [chat, id, mutateChat, setChat, workspace],
+  [id, myData, mutateChat],
 );
