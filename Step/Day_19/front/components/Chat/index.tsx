@@ -22,6 +22,7 @@ const Chat: VFC<Props> = ({ data }) => {
         pattern: /@\[(.+?)]\((\d+?)\)|\n/g,
         decorator(match, index) {
           const arr: string[] | null = match.match(/@\[(.+?)]\((\d+?)\)/)!;
+          console.log(arr);
           if (arr) {
             return (
               <Link key={match + index} to={`/workspace/${workspace}/dm/${arr[2]}`}>

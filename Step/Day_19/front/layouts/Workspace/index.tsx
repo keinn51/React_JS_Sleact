@@ -113,7 +113,7 @@ const Workspace: VFC = () => {
             withCredentials: true,
           },
         )
-        .then((response) => {
+        .then(() => {
           mutate();
           setShowCreateWorkspaceModal(false);
           setNewWorkspace('');
@@ -158,7 +158,7 @@ const Workspace: VFC = () => {
   // console.log(memberData)
 
   return (
-    <div>
+    <div style={{ maxHeight: '100%', overflow: 'hidden' }}>
       <Header>
         <RightMenu>
           <span onClick={onClickUserProfile}>
