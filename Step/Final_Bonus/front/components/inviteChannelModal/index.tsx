@@ -1,13 +1,10 @@
 import Modal from '@components/Modal';
 import useInput from '@hooks/useinput';
 import { Button, Input, Label } from '@pages/SignUp/styles';
-import { IUser } from '@typings/db';
-import fetcher from '@utils/fetcher';
 import axios from 'axios';
 import React, { useCallback, VFC } from 'react';
 import { useParams } from 'react-router';
 import { toast } from 'react-toastify';
-import useSWR from 'swr';
 
 interface Props {
   show: boolean;
@@ -18,14 +15,6 @@ interface Props {
 const InviteChannelModal: VFC<Props> = ({ show, onCloseModal, setShowInviteChannelModal }) => {
   const { workspace, channel } = useParams();
   const [newMember, setNewMember, onChangeNewMember] = useInput('');
-
-  const { data: userData, error } = useSWR<IUser | false>('/api/users', fetcher, {
-    dedupingInterval: 2000, // 2초
-  });
-  const { data: channelData, mutate: mutateMember } = useSWR<IUser[]>(
-    userData ? `/api/workspaces/${workspace}/channels/${channel}/members` : null,
-    fetcher,
-  );
 
   const onInviteMember = useCallback(
     (e) => {
@@ -42,7 +31,6 @@ const InviteChannelModal: VFC<Props> = ({ show, onCloseModal, setShowInviteChann
           },
         )
         .then(() => {
-          mutateMember();
           setShowInviteChannelModal(false);
           setNewMember('');
         })
@@ -51,7 +39,7 @@ const InviteChannelModal: VFC<Props> = ({ show, onCloseModal, setShowInviteChann
           toast.error(error.response?.data, { position: 'bottom-center' });
         });
     },
-    [newMember],
+    [channel, newMember, setNewMember, setShowInviteChannelModal, workspace],
   );
 
   console.log(`workspace: ${workspace} ${channel}`);

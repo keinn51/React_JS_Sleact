@@ -175,6 +175,9 @@ const Channel = () => {
 
   const chatSections = makeSection(chatData ? [...chatData].flat().reverse() : []);
 
+  // console.log(`channel`);
+  // console.log(channel);
+
   if (!myData) {
     return null;
   }

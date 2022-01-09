@@ -125,7 +125,7 @@ const Workspace: VFC = () => {
           setNewUrl('');
         })
         .catch((error) => {
-          console.log(error);
+          // console.log(error);
           toast.error(error.response?.data, { position: 'bottom-center' });
         });
     },
@@ -137,8 +137,8 @@ const Workspace: VFC = () => {
     setShowCreateWorkspaceModal(false);
     setShowCreateChannelModal(false);
     setShowInviteWorkspaceModal(false);
-    // setShowInviteChannelModal(false);
-  }, [setShowCreateChannelModal, setShowCreateWorkspaceModal, setShowInviteWorkspaceModal]);
+    setShowInviteChannelModal(false);
+  }, [setShowCreateChannelModal, setShowCreateWorkspaceModal, setShowInviteChannelModal, setShowInviteWorkspaceModal]);
 
   const toggleWorkspaceModal = useCallback(() => {
     setShowWorkspaceModal((prev) => !prev);
@@ -148,16 +148,17 @@ const Workspace: VFC = () => {
     setShowCreateChannelModal(true);
   }, [setShowCreateChannelModal]);
 
-  // const onClickInviteChannel = useCallback(()=>{
-  //   setShowInviteChannelModal(true);
-  // },[])
+  const onClickInviteChannel = useCallback(() => {
+    setShowInviteChannelModal(true);
+  }, []);
 
   if (!myData) {
     return <Navigate to="/login" />;
   }
 
-  // console.log(myData);
-  // console.log(channelsData);
+  // console.log(myData.Workspaces);
+  console.log(`channelsData`);
+  console.log(channelsData);
   // console.log(`workspace: ${workspace}`)
   // console.log(location.toString())
   // console.log(memberData)
@@ -185,21 +186,20 @@ const Workspace: VFC = () => {
       </Header>
 
       <button onClick={onLogout}>로그아웃</button>
+      {/* WorkspaceWrapper : Workspaces + Channels + Chats 모두 합친 div */}
       <WorkspaceWrapper>
         <Workspaces>
           {myData?.Workspaces?.map((ws) => {
             return (
-              <Link key={ws.id} to={`/workspace/${123}/channel/일반`}>
+              <Link key={ws.id} to={`/workspace/${ws.name}/channel/일반`}>
                 <WorkspaceButton>{ws.name.slice(0, 1).toUpperCase()}</WorkspaceButton>
               </Link>
             );
           })}
           <AddButton onClick={onClickCreateWorkspace}>+</AddButton>
         </Workspaces>
-        {/* Channel  */}
 
         <Channels>
-          {/* WorkspaceName : Button */}
           <WorkspaceName onClick={toggleWorkspaceModal}>Sleact</WorkspaceName>
           <MenuScroll>
             {/* Modal */}
@@ -207,7 +207,7 @@ const Workspace: VFC = () => {
               <WorkspaceModal>
                 <h2>Sleact</h2>
                 <button onClick={onClickInviteWorkspace}>워크스페이스에 사용자 초대</button>
-                {/* <button onClick={onClickInviteChannel}>채널에 사용자 초대</button> */}
+                <button onClick={onClickInviteChannel}>채널에 사용자 초대</button>
                 <button onClick={onClickAddChannel}>채널 만들기</button>
                 <button onClick={onLogout}>로그아웃</button>
               </WorkspaceModal>
@@ -239,6 +239,7 @@ const Workspace: VFC = () => {
           <Button type="submit">Create</Button>
         </form>
       </Modal>
+
       {/* sleact 글자 누르면 나오는 모달 */}
       <CreateChannelModal
         show={showCreateChannelModal}

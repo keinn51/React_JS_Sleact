@@ -27,29 +27,32 @@ const CreateChannelModal: VFC<Props> = ({ show, onCloseModal, setShowCreateChann
     fetcher,
   );
 
-  const onCreateChannel = useCallback((e) => {
-    e.preventDefault();
-    if (!newChannel || !newChannel.trim()) return;
-    axios
-      .post(
-        `/api/workspaces/${workspace}/channels`,
-        {
-          name: newChannel,
-        },
-        {
-          withCredentials: true,
-        },
-      )
-      .then(() => {
-        mutateChannel();
-        setShowCreateChannelModal(false);
-        setNewChannel('');
-      })
-      .catch((error) => {
-        console.dir(error);
-        toast.error(error.response?.data, { position: 'bottom-center' });
-      });
-  }, [newChannel]);
+  const onCreateChannel = useCallback(
+    (e) => {
+      e.preventDefault();
+      if (!newChannel || !newChannel.trim()) return;
+      axios
+        .post(
+          `/api/workspaces/${workspace}/channels`,
+          {
+            name: newChannel,
+          },
+          {
+            withCredentials: true,
+          },
+        )
+        .then(() => {
+          mutateChannel();
+          setShowCreateChannelModal(false);
+          setNewChannel('');
+        })
+        .catch((error) => {
+          console.dir(error);
+          toast.error(error.response?.data, { position: 'bottom-center' });
+        });
+    },
+    [newChannel],
+  );
 
   // console.log(`workspace: ${workspace}`)
 
