@@ -78,7 +78,10 @@ const Channel = () => {
 
   const onMessage = useCallback(
     (data: IChat) => {
-      if (data.Channel.name === channel && data.UserId !== myData?.id) {
+      if (
+        data.Channel.name === channel &&
+        (data.content.startsWith('uploads\\') || data.content.startsWith('uploads/') || data.UserId !== userData?.id)
+      ) {
         mutateChat((chatData) => {
           chatData?.[0].unshift(data);
           return chatData;
@@ -165,6 +168,10 @@ const Channel = () => {
       socket[0]?.off('message', onMessage);
     };
   }, [onMessage, socket]);
+
+  useEffect(() => {
+    localStorage.setItem(`${workspace}-${channel}`, new Date().getTime().toString());
+  }, [workspace, channel]);
 
   const chatSections = makeSection(chatData ? [...chatData].flat().reverse() : []);
 

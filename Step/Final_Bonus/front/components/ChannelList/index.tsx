@@ -1,4 +1,5 @@
 import { CollapseButton } from '@components/DMList/styles';
+import EachChannel from '@components/EachChannel';
 import { IChannel, IUser } from '@typings/db';
 import fetcher from '@utils/fetcher';
 import React, { FC, useCallback, useState } from 'react';
@@ -31,15 +32,7 @@ const ChannelList: FC = () => {
       <div>
         {!channelCollapse &&
           channelData?.map((channel) => {
-            return (
-              <NavLink
-                key={channel.name}
-                className={({ isActive }) => (isActive ? 'selected' : 'not')}
-                to={`/workspace/${workspace}/channel/${channel.name}`}
-              >
-                <span># {channel.name}</span>
-              </NavLink>
-            );
+            return <EachChannel key={channel.id} channel={channel} />;
           })}
       </div>
     </>

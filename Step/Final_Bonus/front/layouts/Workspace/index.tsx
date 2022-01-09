@@ -40,31 +40,34 @@ const DirectMessage = loadable(() => import('@pages/DirectMessage'));
 
 const Workspace: VFC = () => {
   const { workspace } = useParams<{ workspace: string }>();
+
   const [showUserMenu, setShowUserMenu] = useInput(false);
   const [showCreateWorkspaceModal, setShowCreateWorkspaceModal] = useInput(false);
   const [showInviteWorkspaceModal, setShowInviteWorkspaceModal] = useInput(false);
-  // const [showInviteChannelModal, setShowInviteChannelModal] = useInput(false);
+  const [showInviteChannelModal, setShowInviteChannelModal] = useInput(false);
   const [newWorkspace, setNewWorkspace, onChangeNewWorkspace] = useInput('');
   const [newUrl, setNewUrl, onChangeNewUrl] = useInput('');
   const [showWorkspaceModal, setShowWorkspaceModal] = useInput(false);
   const [showCreateChannelModal, setShowCreateChannelModal] = useInput(false);
 
-  const { data: userData, error, isValidating, mutate } = useSWR<IUser | false>('/api/users', fetcher);
-  const { data: channelData } = useSWR<IChannel[]>(
-    userData && workspace ? `/api/workspaces/${workspace}/channels` : null,
+  // IUser & IChannel 타입에 대한 정보는 typings/db.ts를 확인한다.
+  const { data: myData, mutate } = useSWR<IUser | false>('/api/users', fetcher);
+  const { data: channelsData } = useSWR<IChannel[]>(
+    myData && workspace ? `/api/workspaces/${workspace}/channels` : null,
     fetcher,
   );
-  // const { data: memberData } = useSWR<IUser[]>(`/api/workspaces/${workspace}/members`, fetcher);
 
+  // socket 을 사용한다. useSocket 이라는 custom hooks를 통해서, socket과 disconnet 함수를 가져온다.
   const [socket, disconnet] = useSocket(workspace);
 
+  // socket.emit ► login이라는 이벤트를 객체 데이터를 가지고 서버로 보내준다.
   useEffect(() => {
-    if (channelData && userData && socket) {
-      // console.log(socket);
-      socket.emit(`login`, { id: userData.id, channels: channelData.map((v) => v.id) });
+    if (channelsData && myData && socket) {
+      socket.emit(`login`, { id: myData.id, channels: channelsData.map((v) => v.id) });
     }
-  }, [channelData, socket, userData]);
+  }, [channelsData, socket, myData]);
 
+  // workspace 가 바뀌면, disconnet로 이전에 있었던 sockect 을 해제한다.
   useEffect(() => {
     return () => {
       disconnet();
@@ -81,6 +84,8 @@ const Workspace: VFC = () => {
       });
   }, [mutate]);
 
+  // header에서 프로필 사진을 눌렀을 때 실행되는 함수
+  // stopPropagation ► 클릭 이벤트가 자식 함수로 캡쳐링 되지 않음
   const onClickUserProfile = useCallback(
     (e) => {
       e.stopPropagation();
@@ -147,12 +152,12 @@ const Workspace: VFC = () => {
   //   setShowInviteChannelModal(true);
   // },[])
 
-  if (!userData) {
+  if (!myData) {
     return <Navigate to="/login" />;
   }
 
-  // console.log(userData);
-  // console.log(channelData);
+  // console.log(myData);
+  // console.log(channelsData);
   // console.log(`workspace: ${workspace}`)
   // console.log(location.toString())
   // console.log(memberData)
@@ -162,13 +167,13 @@ const Workspace: VFC = () => {
       <Header>
         <RightMenu>
           <span onClick={onClickUserProfile}>
-            <ProfileImg src={gravatar.url(userData.email, { s: `28px`, d: `retro` })} alt={userData.email}></ProfileImg>
+            <ProfileImg src={gravatar.url(myData.email, { s: `28px`, d: `retro` })} alt={myData.email}></ProfileImg>
             {showUserMenu && (
               <Menu style={{ right: 0, top: 38 }} show={showUserMenu} onCloseModal={onClickUserProfile}>
                 <ProfileModal>
-                  <img src={gravatar.url(userData.email, { s: `36px`, d: `retro` })} alt={userData.email} />
+                  <img src={gravatar.url(myData.email, { s: `36px`, d: `retro` })} alt={myData.email} />
                   <div id="profile-letters">
-                    <span id="profile-name">{userData.email}</span>
+                    <span id="profile-name">{myData.email}</span>
                     <span id="profile-active">Active</span>
                   </div>
                 </ProfileModal>
@@ -182,7 +187,7 @@ const Workspace: VFC = () => {
       <button onClick={onLogout}>로그아웃</button>
       <WorkspaceWrapper>
         <Workspaces>
-          {userData?.Workspaces?.map((ws) => {
+          {myData?.Workspaces?.map((ws) => {
             return (
               <Link key={ws.id} to={`/workspace/${123}/channel/일반`}>
                 <WorkspaceButton>{ws.name.slice(0, 1).toUpperCase()}</WorkspaceButton>
@@ -245,11 +250,11 @@ const Workspace: VFC = () => {
         onCloseModal={onCloseModal}
         setShowInviteWorkspaceModal={setShowInviteWorkspaceModal}
       />
-      {/* <InviteChannelModal
+      <InviteChannelModal
         show={showInviteChannelModal}
         onCloseModal={onCloseModal}
         setShowInviteChannelModal={setShowInviteChannelModal}
-      /> */}
+      />
     </div>
   );
 };
