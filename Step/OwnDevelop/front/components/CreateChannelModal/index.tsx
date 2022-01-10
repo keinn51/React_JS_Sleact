@@ -1,7 +1,7 @@
 import Modal from '@components/Modal';
 import useInput from '@hooks/useinput';
 import { Button, Input, Label } from '@pages/SignUp/styles';
-import { IChannel, IUser } from '@typings/db';
+import { IChannel } from '@typings/db';
 import fetcher from '@utils/fetcher';
 import axios from 'axios';
 import React, { useCallback, VFC } from 'react';
@@ -19,6 +19,11 @@ const CreateChannelModal: VFC<Props> = ({ show, onCloseModal, setShowCreateChann
   const { workspace } = useParams();
   const [newChannel, setNewChannel, onChangeNewChannel] = useInput('');
 
+  const { data: channelsData, mutate: mutateChannel } = useSWR<IChannel[]>(
+    workspace ? `/api/workspaces/${workspace}/channels` : null,
+    fetcher,
+  );
+
   const onCreateChannel = useCallback(
     (e) => {
       e.preventDefault();
@@ -34,6 +39,7 @@ const CreateChannelModal: VFC<Props> = ({ show, onCloseModal, setShowCreateChann
           },
         )
         .then(() => {
+          mutateChannel();
           setShowCreateChannelModal(false);
           setNewChannel('');
         })
@@ -42,13 +48,13 @@ const CreateChannelModal: VFC<Props> = ({ show, onCloseModal, setShowCreateChann
           toast.error(error.response?.data, { position: 'bottom-center' });
         });
     },
-    [newChannel, setNewChannel, setShowCreateChannelModal, workspace],
+    [mutateChannel, newChannel, setNewChannel, setShowCreateChannelModal, workspace],
   );
 
   // console.log(`workspace createChannel`);
   // console.log(workspace);
-  // console.log(`newChannel`);
-  // console.log(newChannel);
+  // console.log(`channelsData`);
+  // console.log(channelsData);
 
   return (
     <Modal show={show} onCloseModal={onCloseModal}>

@@ -34,6 +34,7 @@ import InviteChannelModal from '@components/inviteChannelModal';
 import DMList from '@components/DMList';
 import ChannelList from '@components/ChannelList';
 import useSocket from '@hooks/useSocket';
+import CreateWorkspaceModal from '@components/CreateWorkspaceModal';
 
 const Channel = loadable(() => import('@pages/Channel'));
 const DirectMessage = loadable(() => import('@pages/DirectMessage'));
@@ -45,8 +46,6 @@ const Workspace: VFC = () => {
   const [showCreateWorkspaceModal, setShowCreateWorkspaceModal] = useInput(false);
   const [showInviteWorkspaceModal, setShowInviteWorkspaceModal] = useInput(false);
   const [showInviteChannelModal, setShowInviteChannelModal] = useInput(false);
-  const [newWorkspace, setNewWorkspace, onChangeNewWorkspace] = useInput('');
-  const [newUrl, setNewUrl, onChangeNewUrl] = useInput('');
   const [showWorkspaceModal, setShowWorkspaceModal] = useInput(false);
   const [showCreateChannelModal, setShowCreateChannelModal] = useInput(false);
 
@@ -57,10 +56,10 @@ const Workspace: VFC = () => {
     fetcher,
   );
 
-  // const { data: workspaceData } = useSWR<IWorkspace[]>(myData && workspace ? `/api/workspaces` : null, fetcher);
+  const { data: workspaceData } = useSWR<IWorkspace[]>(myData && workspace ? `/api/workspaces/` : null, fetcher);
 
-  // console.log(`workspaceData`);
-  // console.log(workspaceData);
+  console.log(`workspaceData`);
+  console.log(workspaceData);
   // console.log(`workspace name`);
   // console.log(workspace);
 
@@ -108,36 +107,6 @@ const Workspace: VFC = () => {
   const onClickInviteWorkspace = useCallback(() => {
     setShowInviteWorkspaceModal(true);
   }, [setShowInviteWorkspaceModal]);
-
-  const onCreateWorkspace = useCallback(
-    (e) => {
-      e.preventDefault();
-      if (!newWorkspace || !newWorkspace.trim()) return;
-      if (!newUrl || !newUrl.trim()) return; //trim을 넣는 이유는, 띄어쓰기도 잡아주기 위해서!
-      axios
-        .post(
-          '/api/workspaces',
-          {
-            workspace: newWorkspace,
-            url: newUrl,
-          },
-          {
-            withCredentials: true,
-          },
-        )
-        .then(() => {
-          mutate();
-          setShowCreateWorkspaceModal(false);
-          setNewWorkspace('');
-          setNewUrl('');
-        })
-        .catch((error) => {
-          // console.log(error);
-          toast.error(error.response?.data, { position: 'bottom-center' });
-        });
-    },
-    [newWorkspace, newUrl, mutate, setShowCreateWorkspaceModal, setNewWorkspace, setNewUrl],
-  );
 
   // 모든 모달들을 닫아주는 함수
   const onCloseModal = useCallback(() => {
@@ -197,7 +166,7 @@ const Workspace: VFC = () => {
         <Workspaces>
           {myData?.Workspaces?.map((ws) => {
             return (
-              <Link key={ws.id} to={`/workspace/${ws.name}/channel/일반`}>
+              <Link key={ws.id} to={`/workspace/${ws.url}/channels/일반`}>
                 <WorkspaceButton>{ws.name.slice(0, 1).toUpperCase()}</WorkspaceButton>
               </Link>
             );
@@ -225,26 +194,18 @@ const Workspace: VFC = () => {
 
         <Chats>
           <Routes>
-            <Route path="channel/:channel/*" element={<Channel />} />
+            <Route path="channels/:channel/*" element={<Channel />} />
             <Route path="dm/:id/*" element={<DirectMessage />} />
           </Routes>
         </Chats>
       </WorkspaceWrapper>
 
       {/* 새로운 WorkSpace 만들기 */}
-      <Modal show={showCreateWorkspaceModal} onCloseModal={onCloseModal}>
-        <form onSubmit={onCreateWorkspace}>
-          <Label id="workspace-label">
-            <span>Workspace Name</span>
-            <Input id="workspace" type="text" value={newWorkspace} onChange={onChangeNewWorkspace} />
-          </Label>
-          <Label id="workspace-url-label">
-            <span>Workspace URL</span>
-            <Input id="workspace" value={newUrl} onChange={onChangeNewUrl} />
-          </Label>
-          <Button type="submit">Create</Button>
-        </form>
-      </Modal>
+      <CreateWorkspaceModal
+        show={showCreateWorkspaceModal}
+        onCloseModal={onCloseModal}
+        setShowCreateWorkspaceModal={setShowCreateWorkspaceModal}
+      />
 
       {/* sleact 글자 누르면 나오는 모달 */}
       <CreateChannelModal

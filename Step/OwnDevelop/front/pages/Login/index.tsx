@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import useSWR from 'swr';
 
 const LogIn = () => {
-  const { data, error, isValidating, mutate } = useSWR('/api/users', fetcher, {
+  const { data, mutate } = useSWR('/api/users', fetcher, {
     dedupingInterval: 100000,
   });
   const [logInError, setLogInError] = useState(false);
@@ -32,7 +32,8 @@ const LogIn = () => {
           // console.log(response);
         })
         .catch((error) => {
-          setLogInError(error.response?.data?.code === 401);
+          console.log(error.response);
+          setLogInError(error.response?.request?.status === 401);
         });
     },
     [email, mutate, password],
@@ -43,7 +44,7 @@ const LogIn = () => {
   }
 
   if (data) {
-    return <Navigate to="/workspace/sleact/channel/일반" />;
+    return <Navigate to="/workspace/sleact/channels/일반" />;
   }
 
   // console.log(error, userData);
