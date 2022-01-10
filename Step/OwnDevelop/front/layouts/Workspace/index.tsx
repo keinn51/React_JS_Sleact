@@ -58,27 +58,13 @@ const Workspace: VFC = () => {
 
   const { data: workspaceData } = useSWR<IWorkspace[]>(myData && workspace ? `/api/workspaces/` : null, fetcher);
 
-  console.log(`workspaceData`);
-  console.log(workspaceData);
+  // console.log(`workspaceData`);
+  // console.log(workspaceData);
   // console.log(`workspace name`);
   // console.log(workspace);
 
   // socket 을 사용한다. useSocket 이라는 custom hooks를 통해서, socket과 disconnet 함수를 가져온다.
   const [socket, disconnet] = useSocket(workspace);
-
-  // socket.emit ► login이라는 이벤트를 객체 데이터를 가지고 서버로 보내준다.
-  useEffect(() => {
-    if (channelsData && myData && socket) {
-      socket.emit(`login`, { id: myData.id, channels: channelsData.map((v) => v.id) });
-    }
-  }, [channelsData, socket, myData]);
-
-  // workspace 가 바뀌면, disconnet로 이전에 있었던 sockect 을 해제한다.
-  useEffect(() => {
-    return () => {
-      disconnet();
-    };
-  }, [workspace, disconnet]);
 
   const onLogout = useCallback(() => {
     axios
@@ -127,6 +113,20 @@ const Workspace: VFC = () => {
   const onClickInviteChannel = useCallback(() => {
     setShowInviteChannelModal(true);
   }, [setShowInviteChannelModal]);
+
+  // socket.emit ► login이라는 이벤트를 객체 데이터를 가지고 서버로 보내준다.
+  useEffect(() => {
+    if (channelsData && myData && socket) {
+      socket.emit(`login`, { id: myData.id, channels: channelsData.map((v) => v.id) });
+    }
+  }, [channelsData, socket, myData]);
+
+  // workspace 가 바뀌면, disconnet로 이전에 있었던 sockect 을 해제한다.
+  useEffect(() => {
+    return () => {
+      disconnet();
+    };
+  }, [workspace, disconnet]);
 
   if (!myData) {
     return <Navigate to="/login" />;
@@ -195,7 +195,7 @@ const Workspace: VFC = () => {
         <Chats>
           <Routes>
             <Route path="channels/:channel/*" element={<Channel />} />
-            <Route path="dm/:id/*" element={<DirectMessage />} />
+            <Route path="dms/:id/*" element={<DirectMessage />} />
           </Routes>
         </Chats>
       </WorkspaceWrapper>

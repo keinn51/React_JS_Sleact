@@ -25,7 +25,6 @@ const Channel = () => {
 
   const { data: myData } = useSWR(`/api/users`, fetcher);
   const { data: memberData } = useSWR<IUser[]>(`/api/workspaces/${workspace}/channels/${channel}/members`, fetcher);
-  const { data: channeslData } = useSWR<IChannel>(`/api/workspaces/${workspace}/channels`, fetcher);
   const { data: channelData } = useSWR<IChannel>(`/api/workspaces/${workspace}/channels/${channel}`, fetcher);
 
   const {

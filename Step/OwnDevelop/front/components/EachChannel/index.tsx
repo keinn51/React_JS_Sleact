@@ -22,7 +22,7 @@ const EachChannel: VFC<Props> = ({ channel }) => {
 
   // 같은 주소에 있으면 count를 다시 0으로 만들어준다.
   useEffect(() => {
-    if (location.pathname === `/workspace/${workspace}/channel/${channel.name}`) {
+    if (location.pathname === `/workspace/${workspace}/channels/${channel.name}`) {
       mutate(0);
     }
   }, [mutate, location.pathname, workspace, channel]);
@@ -31,7 +31,7 @@ const EachChannel: VFC<Props> = ({ channel }) => {
     <NavLink
       key={channel.name}
       className={({ isActive }) => (isActive ? 'selected' : 'not')}
-      to={`/workspace/${workspace}/channel/${channel.name}`}
+      to={`/workspace/${workspace}/channels/${channel.name}`}
     >
       <span className={count !== undefined && count > 0 ? 'bold' : undefined}># {channel.name}</span>
       {count !== undefined && count > 0 && <span className="count">{count}</span>}

@@ -8,6 +8,7 @@ import React, { useCallback, VFC } from 'react';
 import { useParams } from 'react-router';
 import { toast } from 'react-toastify';
 import useSWR from 'swr';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface Props {
   show: boolean;
@@ -19,7 +20,7 @@ const CreateChannelModal: VFC<Props> = ({ show, onCloseModal, setShowCreateChann
   const { workspace } = useParams();
   const [newChannel, setNewChannel, onChangeNewChannel] = useInput('');
 
-  const { data: channelsData, mutate: mutateChannel } = useSWR<IChannel[]>(
+  const { mutate: mutateChannel } = useSWR<IChannel[]>(
     workspace ? `/api/workspaces/${workspace}/channels` : null,
     fetcher,
   );
@@ -45,6 +46,7 @@ const CreateChannelModal: VFC<Props> = ({ show, onCloseModal, setShowCreateChann
         })
         .catch((error) => {
           console.dir(error);
+          toast.configure();
           toast.error(error.response?.data, { position: 'bottom-center' });
         });
     },

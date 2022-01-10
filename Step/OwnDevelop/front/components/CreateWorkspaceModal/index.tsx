@@ -1,13 +1,10 @@
 import Modal from '@components/Modal';
 import useInput from '@hooks/useinput';
 import { Button, Input, Label } from '@pages/SignUp/styles';
-import { IChannel, IWorkspace } from '@typings/db';
-import fetcher from '@utils/fetcher';
 import axios from 'axios';
 import React, { useCallback, VFC } from 'react';
-import { useParams } from 'react-router';
 import { toast } from 'react-toastify';
-import useSWR from 'swr';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface Props {
   show: boolean;
@@ -16,8 +13,6 @@ interface Props {
 }
 
 const CreateWorkspaceModal: VFC<Props> = ({ show, onCloseModal, setShowCreateWorkspaceModal }) => {
-  // const { workspace } = useParams();
-  // const [newChannel, setNewChannel, onChangeNewChannel] = useInput('');
   const [newWorkspace, setNewWorkspace, onChangeNewWorkspace] = useInput('');
   const [newUrl, setNewUrl, onChangeNewUrl] = useInput('');
 
@@ -52,6 +47,7 @@ const CreateWorkspaceModal: VFC<Props> = ({ show, onCloseModal, setShowCreateWor
             )
             .catch((error) => {
               console.dir(error);
+              toast.configure();
               toast.error(error.response?.data, { position: 'bottom-center' });
             });
         })

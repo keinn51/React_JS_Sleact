@@ -5,6 +5,7 @@ import axios from 'axios';
 import React, { useCallback, VFC } from 'react';
 import { useParams } from 'react-router';
 import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface Props {
   show: boolean;
@@ -36,6 +37,7 @@ const InviteChannelModal: VFC<Props> = ({ show, onCloseModal, setShowInviteChann
         })
         .catch((error) => {
           console.dir(error);
+          toast.configure();
           toast.error(error.response?.data, { position: 'bottom-center' });
         });
     },

@@ -8,6 +8,7 @@ import React, { useCallback, VFC } from 'react';
 import { useParams } from 'react-router';
 import { toast } from 'react-toastify';
 import useSWR from 'swr';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface Props {
   show: boolean;
@@ -19,13 +20,10 @@ const InviteWorkspaceModal: VFC<Props> = ({ show, onCloseModal, setShowInviteWor
   const { workspace } = useParams();
   const [newMember, setNewMember, onChangeNewMember] = useInput('');
 
-  const { data: userData, error } = useSWR<IUser | false>('/api/users', fetcher, {
+  const { data: userData } = useSWR<IUser | false>('/api/users', fetcher, {
     dedupingInterval: 2000, // 2초
   });
-  const { data: channelData, mutate: mutateMember } = useSWR<IUser[]>(
-    userData ? `/api/workspaces/${workspace}/members` : null,
-    fetcher,
-  );
+  const { mutate: mutateMember } = useSWR<IUser[]>(userData ? `/api/workspaces/${workspace}/members` : null, fetcher);
 
   const onInviteMember = useCallback(
     (e) => {
@@ -48,13 +46,12 @@ const InviteWorkspaceModal: VFC<Props> = ({ show, onCloseModal, setShowInviteWor
         })
         .catch((error) => {
           console.dir(error);
+          toast.configure();
           toast.error(error.response?.data, { position: 'bottom-center' });
         });
     },
-    [newMember],
+    [mutateMember, newMember, setNewMember, setShowInviteWorkspaceModal, workspace],
   );
-
-  // console.log(`workspace: ${workspace}`)
 
   return (
     <Modal show={show} onCloseModal={onCloseModal}>

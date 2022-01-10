@@ -22,7 +22,7 @@ const EachDM: VFC<Props> = ({ member, isOnline }) => {
   );
 
   useEffect(() => {
-    if (location.pathname === `/workspace/${workspace}/dm/${member.id}`) {
+    if (location.pathname === `/workspace/${workspace}/dms/${member.id}`) {
       mutate(0);
     }
   }, [mutate, location.pathname, workspace, member]);
@@ -31,7 +31,7 @@ const EachDM: VFC<Props> = ({ member, isOnline }) => {
     <NavLink
       key={member.id}
       className={({ isActive }) => (isActive ? 'selected' : 'not')}
-      to={`/workspace/${workspace}/dm/${member.id}`}
+      to={`/workspace/${workspace}/dms/${member.id}`}
     >
       <i
         className={`c-icon p-channel_sidebar__presence_icon p-channel_sidebar__presence_icon--dim_enabled c-presence ${

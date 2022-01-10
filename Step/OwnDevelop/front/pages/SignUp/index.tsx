@@ -7,7 +7,7 @@ import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
 
 const SignUp = () => {
-  const { data, error, isValidating, mutate } = useSWR('http://localhost:3095/api/users', fetcher, {
+  const { data } = useSWR('/api/users', fetcher, {
     dedupingInterval: 100000,
   });
   const [email, setEmail, onChangeEmail] = useInput('');
@@ -23,24 +23,21 @@ const SignUp = () => {
       setPassword(e.target.value);
       setMismatchError(e.target.value !== passwordCheck);
     },
-    [passwordCheck],
+    [passwordCheck, setMismatchError, setPassword],
   );
-  //비밀번호 체크를 해준다. set함수는 써 줄 필요 없다. 왜냐하면 set은 변하지 않는다고 보장되어 있기 때문이다.
 
   const onChangePasswordCheck = useCallback(
     (e) => {
       setPasswordCheck(e.target.value);
       setMismatchError(e.target.value !== password);
     },
-    [password],
+    [password, setMismatchError, setPasswordCheck],
   );
 
   const onSubmit = useCallback(
     (e) => {
       e.preventDefault();
-      console.log(email, nickname, password, passwordCheck);
       if (!mismatchError && nickname) {
-        console.log(`서버로 회원가입하기`);
         setSignUpError('');
         setSignUpSuccess(true);
         axios
@@ -49,17 +46,12 @@ const SignUp = () => {
             nickname,
             password,
           })
-          .then((response) => {
-            console.log(response);
-          })
           .catch((error) => {
-            console.log(error.response);
             setSignUpError(error.response.data);
-          })
-          .finally(() => {});
+          });
       }
     },
-    [email, nickname, password, passwordCheck, mismatchError],
+    [mismatchError, nickname, setSignUpError, setSignUpSuccess, email, password],
   );
 
   if (data === undefined) {
