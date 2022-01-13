@@ -1,11 +1,8 @@
-import React, { useCallback, useEffect, useRef, VFC } from 'react';
+import React, { FC, memo, useCallback, useEffect, useRef, VFC } from 'react';
 import { ChatArea, EachMention, Form, MentionsTextarea, SendButton, Toolbox } from '@components/ChatBox/styles';
 import autosize from 'autosize';
 import { Mention, SuggestionDataItem } from 'react-mentions';
-import useSWR from 'swr';
 import { IUser } from '@typings/db';
-import fetcher from '@utils/fetcher';
-import { useParams } from 'react-router-dom';
 import gravatar from 'gravatar';
 
 interface Props {
@@ -13,22 +10,20 @@ interface Props {
   onSubmitForm: (e: any) => void;
   onChangeChat: (e: any) => void;
   placeholder?: string;
+  memberData?: IUser[];
 }
 
-const ChatBox: VFC<Props> = ({ chat, onSubmitForm, onChangeChat, placeholder }) => {
-  const { workspace } = useParams<{ workspace: string }>();
-  const { data: userData } = useSWR<IUser | false>('/api/users', fetcher);
-  const { data: memberData } = useSWR<IUser[]>(userData ? `/api/workspaces/${workspace}/members` : null, fetcher);
-
+const ChatBox: FC<Props> = ({ chat, onSubmitForm, onChangeChat, placeholder, memberData }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  console.log('3');
 
   const OnKeydownChat = useCallback(
     (e) => {
-      if (e.key === 'Enter') {
-        if (!e.shiftKey) {
-          e.preventDefault();
-          onSubmitForm(e);
-        }
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        onSubmitForm(e);
+        console.log('1');
       }
     },
     [onSubmitForm],
@@ -53,19 +48,20 @@ const ChatBox: VFC<Props> = ({ chat, onSubmitForm, onChangeChat, placeholder }) 
         </EachMention>
       );
     },
-    [],
+    [memberData],
   );
 
   useEffect(() => {
     if (textareaRef.current) {
       autosize(textareaRef.current);
     }
-  });
+  }, []);
 
   return (
     <ChatArea>
       <Form onSubmit={onSubmitForm}>
         <MentionsTextarea
+          id="editor-chat"
           value={chat}
           onChange={onChangeChat}
           onKeyDown={OnKeydownChat}
@@ -100,4 +96,4 @@ const ChatBox: VFC<Props> = ({ chat, onSubmitForm, onChangeChat, placeholder }) 
   );
 };
 
-export default ChatBox;
+export default memo(ChatBox);

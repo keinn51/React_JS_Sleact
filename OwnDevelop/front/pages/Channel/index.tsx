@@ -47,7 +47,7 @@ const Channel = () => {
   const onSubmitForm = useCallback(
     (e) => {
       e.preventDefault();
-      if (chat.trim() && chatData && channelData) {
+      if (chat?.trim() && chatData && channelData && myData) {
         const savedChat = chat;
         mutateChat((prevChatData) => {
           prevChatData?.[0].unshift({
@@ -61,15 +61,14 @@ const Channel = () => {
           });
           return prevChatData;
         }, false).then(() => {
+          localStorage.setItem(`${workspace}-${channel}`, new Date().getTime().toString());
           setChat('');
           scrollbarRef?.current?.scrollToBottom();
+          console.log('2');
         });
         axios
           .post(`/api/workspaces/${workspace}/channels/${channel}/chats`, {
-            content: chat,
-          })
-          .then(() => {
-            mutateChat();
+            content: savedChat,
           })
           .catch(console.error);
       }
@@ -213,7 +212,13 @@ const Channel = () => {
         setSize={setSize}
         isReachingEnd={isReachingEnd}
       />
-      <ChatBox chat={chat} onSubmitForm={onSubmitForm} onChangeChat={onChangeChat} />
+      <ChatBox
+        chat={chat}
+        onSubmitForm={onSubmitForm}
+        onChangeChat={onChangeChat}
+        memberData={memberData}
+        placeholder={`Message #${channel}`}
+      />
       <InviteChannelModal
         show={showInviteChannelModal}
         onCloseModal={onCloseModal}
